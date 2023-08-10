@@ -102,14 +102,22 @@ def invoice(request, billno):
     amount = float(amount)
     amountwithouttax = float(amountwithouttax)
     gst = round((amount - amountwithouttax), 2)
-    
+    sgst = round(billobj.sgst*amount/100)
+    cgst = round(billobj.cgst*amount/100)
     rs = str(amount).split(".")[0]
-    rs = num2words(int(rs))
+    absolute_amt = round(amount,0)
+    round_off = "{:.2f}".format(round(absolute_amt-amount,2))
+    if round(absolute_amt-amount,2)>0:
+        round_off = f"+{round_off}"
+    rs = num2words(int(absolute_amt))
+
     if (int(str(amount).split(".")[1])>0):
         paisa = num2words(int(str(amount).split(".")[1]))
+    
     else:
         paisa = False
-    return render(request, 'billmanage/invoice.html', {'bill': billobj, 'items': itemobj, 'rs': rs, 'paisa': paisa, 'gst': gst, 'range':6})
+    
+    return render(request, 'billmanage/invoice.html', {'bill': billobj, 'items': itemobj, 'rs': rs, 'absolute_amt': absolute_amt,'round_off':round_off, 'gst': gst,'cgst':cgst,'sgst':sgst, 'range':6})
 
 
 def delete(request, billno):

@@ -227,7 +227,7 @@
 					</div>
 				 </div>
 				 <label class="mb-2 form-label col-2 col-form-label" style="font-size: 15px; border-bottom: 1px solid gray ;">Items</label>
-				 <div class="table-responsive">
+				 <div class="table-responsive" style="zoom: 90%;">
                     <table class="table card-table table-vcenter text-nowrap datatable">
                       <thead>
                           <tr class="text-center">
@@ -254,8 +254,8 @@
                       </tbody>
                     </table>
                   </div>
-                <div style="position: absolute; bottom: 0; right: -54px">
-                    <div class="row justify-content-center " style=" text-align: center; margin: auto; zoom: 90%;">
+                <div style="position: absolute; bottom: 0; right: -84px">
+                    <div class="row justify-content-left " style=" text-align: center; margin: auto; zoom: 85%;width: 105%;">
                         
                         <div class="col-2">
                             <label class="form-label col-form-label" style="border-bottom: 1px solid gray;">Total Amount:</label>
@@ -268,24 +268,43 @@
                         </div>
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
                         <div class="col-1">
+                            <label class="form-label col-form-label" style="border-bottom: 1px solid gray;">CGST (Rs.)</label>
+                            <div class="mt-2" style="font-size: 15px;"><span id="CGST_T">{{cgst}}</span></div>
+                        </div>
+                        <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
+                        <div class="col-1">
                             <label class="form-label col-form-label" style="border-bottom: 1px solid gray;">SGST</label>
                             <div class="mt-2" style="font-size: 15px;"><span id="SGST">{{bill.sgst}}%</span></div>
                         </div>
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
-                        <div class="col-2">
-                            <label class="form-label col-form-label" style="border-bottom: 1px solid gray">GST</label>
+                        <div class="col-1">
+                            <label class="form-label col-form-label" style="border-bottom: 1px solid gray;">SGST (Rs.)</label>
+                            <div class="mt-2" style="font-size: 15px;"><span id="SGST_T">{{sgst}}</span></div>
+                        </div>
+                        <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
+                        <div class="col-1">
+                            <label class="form-label col-form-label" style="border-bottom: 1px solid gray">Total Tax</label>
                             <div class="mt-2" style="font-size: 15px;">Rs. <span id="grandamt">{{gst}}</span></div>
                         </div>
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
-                        <div class="col-2">
+                        <div class="col-2" style="text-align: right; padding-right: 50px;">
+                          <div class="row" >
                             <label class="form-label col-form-label" style="border-bottom: 1px solid gray">Grand Total</label>
                             <div class="mt-2" style="font-size: 15px;">Rs. <span id="grandamt">{{bill.grandtotal}}</span></div>
+                          </div>
+                          <div class="row">
+                            <div class="mt-2" style="font-size: 13px;"><span>Round off: </span><span id="round_off">{{round_off}}</span></div>
+                          </div>
+                          <div class="row">
+
+                            <div class="mt-2 pt-2" style="font-size: 18px;border-top: 1px solid gray;font-weight: 700;">Rs. <span id="abs">{{absolute_amt}}</span></div>
+                          </div>
                         </div>
                         <div class="col-12 mt-2">
                             {% if paisa%}
-                                <label class="form-label col-form-label" style="font-size: 15px;width:max-content; border-bottom: 1px solid gray;">Rupees (in words): <span style="color: gray;"> {{rs}} point {{paisa}}</span></label>
+                                <label class="form-label col-form-label" style="font-size: 15px;width:max-content; border-bottom: 1px solid gray;">Rupees (in words): <span style="color: gray;"> {{rs}} point {{paisa}} only</span></label>
                             {% else %}
-                                <label class="form-label col-form-label" style="font-size: 15px;width:max-content;border-bottom: 1px solid gray;">Rupees (in words): <span style=" color:gray"> {{rs}}</span></label>
+                                <label class="form-label col-form-label" style="font-size: 15px;width:max-content;border-bottom: 1px solid gray;">Rupees (in words): <span style=" color:gray"> {{rs}} only</span></label>
                             {% endif %}
                         </div>
                     </div>
