@@ -10,8 +10,8 @@ class bill(models.Model):
     recipient = models.TextField(null=False, blank=False, max_length=100)
     address = models.TextField(null=False, blank=False, max_length=200)
     GSTno = models.CharField(null=False, blank=False, max_length=15)
-    cgst = models.IntegerField(null=False, blank=False)
-    sgst = models.IntegerField(null=False, blank=False)
+    cgst = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=2)
+    sgst = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=2)
     total = models.DecimalField(null=False, blank=False, max_digits=12, decimal_places=2)
     grandtotal = models.DecimalField(null=False, blank=False, max_digits=12, decimal_places=2)
 
@@ -21,5 +21,5 @@ class item(models.Model):
     itemname = models.TextField(null=False, blank=False, max_length=200)
     hsncode = models.IntegerField(null=False, blank=False)
     qty = models.IntegerField(null=False, blank=False)
-    rate = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=2)
+    rate = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=4)
     amount = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=2)

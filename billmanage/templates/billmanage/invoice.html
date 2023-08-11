@@ -246,7 +246,7 @@
                           <td style="width: 15rem;overflow-wrap: break-word;">{{item.itemname}}</td>
                           <td style="width: 8rem;">{{item.hsncode}}</td>
                           <td>{{item.qty}}</td>
-                          <td>{{item.rate}}</td>
+                          <td>{{item.rate.normalize}}</td>
                           <td>{{item.amount}}</td>
                         </tr>
                       {% endfor %}
@@ -264,7 +264,7 @@
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
                         <div class="col-1">
                             <label class="form-label col-form-label" style="border-bottom: 1px solid gray;">CGST</label>
-                            <div class="mt-2" style="font-size: 15px;"><span id="CGST">{{bill.cgst}}%</span></div>
+                            <div class="mt-2" style="font-size: 15px;"><span id="CGST">{{bill.cgst.normalize}}%</span></div>
                         </div>
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
                         <div class="col-1">
@@ -274,7 +274,7 @@
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
                         <div class="col-1">
                             <label class="form-label col-form-label" style="border-bottom: 1px solid gray;">SGST</label>
-                            <div class="mt-2" style="font-size: 15px;"><span id="SGST">{{bill.sgst}}%</span></div>
+                            <div class="mt-2" style="font-size: 15px;"><span id="SGST">{{bill.sgst.normalize}}%</span></div>
                         </div>
                         <hr style="    width: 1px;height: auto;margin: 0 10px;padding: 0;">
                         <div class="col-1">

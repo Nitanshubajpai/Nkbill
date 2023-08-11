@@ -21,7 +21,7 @@ def dashboard(request):
 
 
 def addbill(request):
-    billno = bill.objects.count() + 1
+    billno = bill.objects.all().order_by('-billno').first().billno + 1
     return render(request, 'billmanage/addbill.html', {'billno': billno})
 
 def addbill_submitted(request):
@@ -30,13 +30,13 @@ def addbill_submitted(request):
         amountwithtax = []
         total = 0
         grandtotal = 0
-        gst =int(request.POST['CGST'])+int(request.POST['SGST'])
+        gst =float(request.POST['CGST'])+float(request.POST['SGST'])
         rate = request.POST.getlist('rate[]',False)
         qty = request.POST.getlist('qty[]',False)
         itname = request.POST.getlist('ItemName[]',False)
         hsn = request.POST.getlist('hsn[]',False)
         for i in range(len(rate)):
-            amt = int(rate[i])*int(qty[i])
+            amt = float(rate[i])*float(qty[i])
             total += amt
             gmt = amt+(amt*gst/100)
             grandtotal += gmt
@@ -50,13 +50,13 @@ def addbill_submitted(request):
             date = request.POST['date'],
             billno = request.POST.get('invoice_number',billno),
             GSTno = request.POST['gst'],
-            cgst = int(request.POST['CGST']),
-            sgst = int(request.POST['SGST']),
+            cgst = float(request.POST['CGST']),
+            sgst = float(request.POST['SGST']),
             total = total,
             grandtotal = grandtotal,
         )
         newbill.save()
-        print(len(rate))
+        
         for i in range(len(rate)):
             newitem = item(
                 itemname = itname[i],
@@ -102,8 +102,8 @@ def invoice(request, billno):
     amount = float(amount)
     amountwithouttax = float(amountwithouttax)
     gst = round((amount - amountwithouttax), 2)
-    sgst = round(billobj.sgst*amount/100)
-    cgst = round(billobj.cgst*amount/100)
+    sgst = round(float(billobj.sgst)*amount/100)
+    cgst = round(float(billobj.cgst)*amount/100)
     rs = str(amount).split(".")[0]
     absolute_amt = round(amount,0)
     round_off = "{:.2f}".format(round(absolute_amt-amount,2))
