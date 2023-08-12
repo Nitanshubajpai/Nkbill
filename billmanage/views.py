@@ -35,6 +35,7 @@ def addbill_submitted(request):
         qty = request.POST.getlist('qty[]',False)
         itname = request.POST.getlist('ItemName[]',False)
         hsn = request.POST.getlist('hsn[]',False)
+
         for i in range(len(rate)):
             amt = float(rate[i])*float(qty[i])
             total += amt
@@ -42,7 +43,8 @@ def addbill_submitted(request):
             grandtotal += gmt
             amount.append(amt)
             amountwithtax.append(gmt)
-        billno = bill.objects.count() + 1
+
+        billno = bill.objects.all().order_by('-billno').first().billno + 1
  
         newbill = bill(
             recipient = request.POST['rname'],
@@ -74,15 +76,22 @@ def addbill_submitted(request):
 def records(request):
     if request.method=='POST':
         startingdate = request.POST['start']
+        billno = request.POST['billno']
         enddate = request.POST.get('end') or datetime.now()
-        if startingdate:
+        if billno:
+            billobj = bill.objects.filter(billno=billno)
+
+        elif startingdate:
             
             billobj = bill.objects.filter(date__range=[startingdate, enddate]).order_by('-date')
+
         else:
             
-            billobj = bill.objects.all().order_by('-date')
+            billobj = bill.objects.all().order_by('-billno')
+
+        
     else:
-        billobj = bill.objects.all().order_by('-date')
+        billobj = bill.objects.all().order_by('-billno')
 
     paginator = Paginator(billobj, 10)
     page_number = request.GET.get('page')
@@ -102,20 +111,14 @@ def invoice(request, billno):
     amount = float(amount)
     amountwithouttax = float(amountwithouttax)
     gst = round((amount - amountwithouttax), 2)
-    sgst = round(float(billobj.sgst)*amount/100)
-    cgst = round(float(billobj.cgst)*amount/100)
+    sgst = round(float(billobj.sgst)*amountwithouttax/100,2)
+    cgst = round(float(billobj.cgst)*amountwithouttax/100,2)
     rs = str(amount).split(".")[0]
     absolute_amt = round(amount,0)
     round_off = "{:.2f}".format(round(absolute_amt-amount,2))
     if round(absolute_amt-amount,2)>0:
         round_off = f"+{round_off}"
     rs = num2words(int(absolute_amt))
-
-    if (int(str(amount).split(".")[1])>0):
-        paisa = num2words(int(str(amount).split(".")[1]))
-    
-    else:
-        paisa = False
     
     return render(request, 'billmanage/invoice.html', {'bill': billobj, 'items': itemobj, 'rs': rs, 'absolute_amt': absolute_amt,'round_off':round_off, 'gst': gst,'cgst':cgst,'sgst':sgst, 'range':6})
 

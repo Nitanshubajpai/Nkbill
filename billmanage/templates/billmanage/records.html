@@ -148,17 +148,22 @@
                       {% csrf_token %}
                       <div class="m-1 form-group" style="display: flex; justify-content: space-evenly;">
                         <div>
-                          <label for="start" class=" form-label col-form-label">Filter with Date:</label>
+                          <label for="start" class=" form-label col-form-label">Filters:</label>
                         </div>
+
                         <div>
-                          <input type="date" name="start" class="form-control" required>
+                          <input type="number" name="billno" class="form-control" placeholder="Enter Bill no">
+                        </div>
+
+                        <div>
+                          <input type="date" name="start" class="form-control">
                         </div>
                         
                         <div>
                           <label for="" class="col-form-label form-label">To</label>
                         </div>
                         <div>
-                          <input type="date" name="end" class="form-control" required>
+                          <input type="date" name="end" class="form-control">
                         </div>
                         <div>
                           <button type="submit" class="btn btn-dark"><i class="typcn typcn-filter"></i></button>
