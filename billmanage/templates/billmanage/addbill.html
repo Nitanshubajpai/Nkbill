@@ -205,24 +205,37 @@
 							{% csrf_token %}
 							<div class="row">
 								<div class="col-lg-8 col-md-8 col-sm-12">
+
+									<div class="form-group row mb-3">
+										<label class="form-label col-3 col-form-label">Choose Recipient: </label>
+										<div class="col">
+											<select id="nameDropdown" onchange="updateInputValue()" class="form-select">
+												<option value="" disabled selected>Select a name</option>
+												{% for key in reciept_names_dict %}
+												  <option value="{{ key }}">{{ key }}</option>
+												{% endfor %}
+											  </select>
+										</div>
+									</div>
+
 									<div class="form-group row mb-3">
 										<label class="form-label col-2 col-form-label">Name </label>
 										<div class="col">
-											<input name="rname" type="text" class="form-control"
+											<input name="rname" type="text" class="form-control" id="rname"
 												placeholder="Enter Recipient's Name" required>
 										</div>
 									</div>
 									<div class="form-group row mb-3">
 										<label class="form-label col-2 col-form-label">Address </label>
 										<div class="col">
-											<input name="address" type="text" class="form-control"
+											<input name="address" type="text" class="form-control" id="address"
 												placeholder="Enter Recipient's Address" required>
 										</div>
 									</div>
 									<div class="form-group row mb-3">
 										<label class="form-label col-2 col-form-label">GSTIN </label>
 										<div class="col">
-											<input name="gst" type="text" minlength="15" maxlength="15"
+											<input name="gst" type="text" minlength="15" maxlength="15" id="gst"
 												class="form-control" oninput="this.value = this.value.toUpperCase()"
 												placeholder="Enter Recipient's GST number" required>
 										</div>
@@ -459,7 +472,22 @@
 								});
 							});
 						</script>
+						<script>
+							function updateInputValue() {
+									var dropdown = document.getElementById("nameDropdown");
+									var name = dropdown.value;
+									var rname = document.getElementById("rname");
+									var address = document.getElementById("address");
+									var gst = document.getElementById("gst");
+									var reciept_names_dict = {{reciept_names_dict|safe}};
+									if (name in reciept_names_dict) {
+										rname.value = name;
+										address.value = reciept_names_dict[name]['address']
+										gst.value = reciept_names_dict[name]['gstno']
 
+									}
+								}
+						</script>
 						<!--
 				<table class="table table-transparent table-responsive">
 				  <thead>

@@ -21,8 +21,14 @@ def dashboard(request):
 
 
 def addbill(request):
-    billno = bill.objects.all().order_by('-billno').first().billno + 1
-    return render(request, 'billmanage/addbill.html', {'billno': billno})
+    bill_objs = bill.objects.all().order_by('-billno')
+    billno = bill_objs.first().billno + 1
+    reciept_names_dict = dict()
+    
+    for bill_obj in bill_objs:
+        reciept_names_dict[f'{bill_obj.recipient} | {bill_obj.address}'] = {'address':bill_obj.address, 'gstno':bill_obj.GSTno, 'name':bill_obj.recipient}
+
+    return render(request, 'billmanage/addbill.html', {'billno': billno, 'reciept_names_dict': reciept_names_dict})
 
 def addbill_submitted(request):
     if request.method == "POST":
