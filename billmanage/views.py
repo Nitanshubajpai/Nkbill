@@ -13,6 +13,7 @@ def dashboard(request):
     for bills in billobj:
         amount = amount+float(bills.grandtotal)
     
+    amount = round(amount,2)
     count = len(billobj)
 
     billobj = bill.objects.all().order_by('-date')[:10]
@@ -27,7 +28,7 @@ def addbill(request):
         billno = 1
     else:
         billno = bill_objs.first().billno + 1
-        
+
     reciept_names_dict = dict()
     
     for bill_obj in bill_objs:
