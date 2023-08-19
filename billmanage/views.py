@@ -47,6 +47,7 @@ def addbill_submitted(request):
         qty = request.POST.getlist('qty[]',False)
         itname = request.POST.getlist('ItemName[]',False)
         hsn = request.POST.getlist('hsn[]',False)
+        billno = request.POST.get('invoice_no',False)
 
         for i in range(len(rate)):
             amt = float(rate[i])*float(qty[i])
@@ -56,10 +57,11 @@ def addbill_submitted(request):
             amount.append(amt)
             amountwithtax.append(gmt)
 
-        try:
-            billno = bill.objects.all().order_by('-billno').first().billno + 1
-        except:
-            billno = 1
+        if not billno:
+            try:
+                billno = bill.objects.all().order_by('-billno').first().billno + 1
+            except:
+                billno = 1
  
         newbill = bill(
             recipient = request.POST['rname'],

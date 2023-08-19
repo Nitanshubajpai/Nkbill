@@ -254,7 +254,7 @@
 									<div class="form-group row mb-3">
 										<label class="form-label col-3 col-form-label">Date: </label>
 										<div class="col">
-											<input name="date" type="date" class="form-control" id="date" required>
+											<input name="date" type="date" class="form-control" id="date" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" required>
 										</div>
 									</div>
 								</div>
@@ -481,7 +481,7 @@
 									var gst = document.getElementById("gst");
 									var reciept_names_dict = {{reciept_names_dict|safe}};
 									if (name in reciept_names_dict) {
-										rname.value = name;
+										rname.value = reciept_names_dict[name]['name'];
 										address.value = reciept_names_dict[name]['address']
 										gst.value = reciept_names_dict[name]['gstno']
 
