@@ -22,7 +22,12 @@ def dashboard(request):
 
 def addbill(request):
     bill_objs = bill.objects.all().order_by('-billno')
-    billno = bill_objs.first().billno + 1
+
+    if not bill_objs:
+        billno = 1
+    else:
+        billno = bill_objs.first().billno + 1
+        
     reciept_names_dict = dict()
     
     for bill_obj in bill_objs:
@@ -50,7 +55,10 @@ def addbill_submitted(request):
             amount.append(amt)
             amountwithtax.append(gmt)
 
-        billno = bill.objects.all().order_by('-billno').first().billno + 1
+        try:
+            billno = bill.objects.all().order_by('-billno').first().billno + 1
+        except:
+            billno = 1
  
         newbill = bill(
             recipient = request.POST['rname'],
