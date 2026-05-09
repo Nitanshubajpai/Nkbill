@@ -267,11 +267,17 @@
 							<div class="item_container" id=items>
 								<div class="page-title">1.</div>
 								<div class="mb-4 p-2" style="border:1px solid lightgray;" id="itemno0">
-
+									<div class="row mb-2">
+										<div class="col-12 form-group">
+											<label class="mb-1 form-label col col-form-label" style="font-size:12px; color:#6c757d;">Choose from previous items (optional)</label>
+											<select class="form-select item-autofill-select" onchange="fillItemFromDropdown(this)">
+												<option value="" selected>— Select a previous item —</option>
+											</select>
+										</div>
+									</div>
 									<div class="row mb-3">
 										<div class="col-9 form-group">
-											<label class="mb-1 form-label col col-form-label"
-												for="description">Description</label>
+											<label class="mb-1 form-label col col-form-label" for="description">Description</label>
 											<textarea class="form-control" type="textarea" row=2 name="ItemName[]"
 												placeholder="Description of item" required></textarea>
 										</div>
@@ -293,8 +299,7 @@
 												name="rate[]" placeholder="Rate" required>
 										</div>
 										<div class="col-4 form-group">
-											<label class="mb-1 form-label col col-form-label"
-												for="amount">Amount</label>
+											<label class="mb-1 form-label col col-form-label" for="amount">Amount</label>
 											<div class="form-control" class="amount" id="amount">
 											</div>
 										</div>
@@ -371,7 +376,7 @@
 								$(add_button).click(function (e) {
 									e.preventDefault();
 									if (x < max_fields) {
-										$(wrapper).append('<div class="page-title">' + (x + 1) + '.</div><div class="mb-4 p-2" style="border:1px solid lightgray;" id="item' + (x + 1) + '"><div class="row mb-3"><div class="col-9 form-group"><label class="mb-1 form-label col col-form-label" for="description">Description</label><textarea class="form-control" type="textarea" name="ItemName[]" placeholder="Description of item" required></textarea></div><div class="col-3 form-group"><label class="mb-1 form-label col col-form-label" for="HSN">HSN Code</label><input class="form-control" type="number" name="hsn[]" placeholder="HSN Code" required></div></div><div class="row mb-3"><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label" for="qty">Quantity</label><input class="form-control" type="number" name="qty[]" id="qty' + x + '" placeholder="Quantity" required></div><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label" for="rate">Rate</label><input class="form-control" type="number" step="0.0001" name="rate[]" id="rate' + x + '" placeholder="Rate" required></div><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label" for="amount">Amount</label><div class="form-control" class="amount" id="amount' + x + '" ></div></div></div></div>');//add input box
+										$(wrapper).append('<div class="page-title">' + (x + 1) + '.</div><div class="mb-4 p-2" style="border:1px solid lightgray;" id="item' + (x + 1) + '"><div class="row mb-2"><div class="col-12 form-group"><label class="mb-1 form-label" style="font-size:12px;color:#6c757d;">Choose from previous items (optional)</label><select class="form-select item-autofill-select" onchange="fillItemFromDropdown(this)">' + buildItemOptions() + '</select></div></div><div class="row mb-3"><div class="col-9 form-group"><label class="mb-1 form-label col col-form-label" for="description">Description</label><textarea class="form-control" type="textarea" name="ItemName[]" placeholder="Description of item" required></textarea></div><div class="col-3 form-group"><label class="mb-1 form-label col col-form-label" for="HSN">HSN Code</label><input class="form-control" type="number" name="hsn[]" placeholder="HSN Code" required></div></div><div class="row mb-3"><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label" for="qty">Quantity</label><input class="form-control" type="number" name="qty[]" id="qty' + x + '" placeholder="Quantity" required></div><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label" for="rate">Rate</label><input class="form-control" type="number" step="0.0001" name="rate[]" id="rate' + x + '" placeholder="Rate" required></div><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label" for="amount">Amount</label><div class="form-control" class="amount" id="amount' + x + '" ></div></div></div></div>');//add input box
 										x++;
 									}
 									else {
@@ -473,6 +478,36 @@
 									}
 								});
 							});
+						</script>
+						<script>
+							var items_dict = {{ items_dict_json|safe }};
+
+							function buildItemOptions() {
+								var opts = '<option value="" selected>— Select a previous item —</option>';
+								for (var key in items_dict) {
+									opts += '<option value="' + key.replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '">' + key + '</option>';
+								}
+								return opts;
+							}
+
+							// Populate all item dropdowns on page load
+							$(document).ready(function() {
+								$('.item-autofill-select').each(function() {
+									$(this).html(buildItemOptions());
+								});
+							});
+
+							function fillItemFromDropdown(selectEl) {
+								var key = selectEl.value;
+								if (!key || !(key in items_dict)) return;
+								var card = $(selectEl).closest('.mb-4');
+								card.find('textarea[name="ItemName[]"]').val(key);
+								card.find('input[name="hsn[]"]').val(items_dict[key]['hsncode']);
+								card.find('input[name="rate[]"]').val(items_dict[key]['rate']);
+								// trigger amount recalc
+								card.find('input[name="qty[]"]').trigger('keyup');
+								card.find('input[name="rate[]"]').trigger('keyup');
+							}
 						</script>
 						<script>
 							function updateInputValue() {

@@ -204,8 +204,8 @@
                         <td>{{bill.grandtotal}}</td>
                         <td>{{bill.date}}</td>
                         <td class="text-end d-flex" style="justify-content: space-around;">
-                            <!--<a href="" style="text-decoration: none;" ><button class="btn btn-outline-primary pl-2 pr-2 mt-1">Update</button></a>-->
-                            <a  href="{% url 'delete' billno=bill.billno %}" style="text-decoration: none;"><button class="btn btn-outline-red pl-2 pr-2 mt-1" >Delete</button></a>
+                            <a href="{% url 'editbill' billno=bill.billno %}" style="text-decoration: none;"><button class="btn btn-outline-primary pl-2 pr-2 mt-1">Edit</button></a>
+                            <a href="{% url 'delete' billno=bill.billno %}" style="text-decoration: none;"><button class="btn btn-outline-red pl-2 pr-2 mt-1">Delete</button></a>
                         </td>
                       </tr>
                     {% endfor %}

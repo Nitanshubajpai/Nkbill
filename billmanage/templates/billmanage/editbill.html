@@ -1,0 +1,405 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>Edit Bill #{{ bill.billno }} | {{ company_profile.company_name|default:"N.K Graphics" }} | Bill</title>
+	<link href="{% static 'css/tabler.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'css/tabler-flags.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'css/tabler-payments.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'css/tabler-vendors.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'css/demo.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'typicons.font-2.1.2/src/font/typicons.css' %}" rel="stylesheet" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+<style>
+	.navitemsextra { font-size: 15px; font-weight: 500; margin: 5px 10px; color: white; opacity: 1; }
+	.nav-link { background-color: rgb(158 152 255 / 10%) }
+	.companyname { align-items: center; height: 40px; margin: 4px; font-size: 30px; font-weight: 600; font-family: initial; width: max-content; background-color: rgb(1, 1, 75); color: white; }
+	.companyname > span { margin: 8px }
+	.duplicatemark { margin: 0; padding: 0; color: black; font-size: 10px; }
+	.duplicatemark > li { padding: 3px; width: 65px; margin: 1px; text-align: center; }
+</style>
+<body class="antialiased">
+<div class="page">
+	<aside class="navbar navbar-vertical navbar-expand-lg navbar-dark">
+		<div class="container-fluid">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<h1 class="navbar-brand navbar-brand-autodark">
+				<a href=".">
+					{% if company_profile.sidebar_logo %}<img src="{{ company_profile.sidebar_logo.url }}" width="auto" height="50" alt="{{ company_profile.company_name|default:'N.K Graphics' }}" class="mt-2">{% else %}<img src="{% static 'img/logodash.png' %}" width="auto" height="50" alt="{{ company_profile.company_name|default:'N.K Graphics' }}" class="mt-2">{% endif %}
+				</a>
+			</h1>
+			<div class="collapse navbar-collapse" id="navbar-menu">
+				<ul class="navbar-nav pt-lg-3">
+					<li class="navitemsextra nav-item">
+						<a class="nav-link" href="{% url 'dashboard' %}">
+							<span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px"><i class="typcn typcn-home-outline"></i></span>
+							<span class="nav-link-title">Dashboard</span>
+						</a>
+					</li>
+					<li class="navitemsextra nav-item">
+						<a class="nav-link" href="{% url 'addbill' %}">
+							<span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px"><i class="typcn typcn-document-add"></i></span>
+							<span class="nav-link-title">New Bill</span>
+						</a>
+					</li>
+					<li class="navitemsextra activenav active nav-item">
+						<a class="nav-link" href="{% url 'records' %}">
+							<span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px"><i class="typcn typcn-archive"></i></span>
+							<span class="nav-link-title" style="border-bottom: 2px solid white;">Bill Records</span>
+						</a>
+					</li>
+					{% if company_profile.show_profile_tab %}
+					<li class="navitemsextra nav-item">
+						<a class="nav-link" href="{% url 'profile' %}">
+							<span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px"><i class="typcn typcn-user"></i></span>
+							<span class="nav-link-title">Profile</span>
+						</a>
+					</li>
+					{% endif %}
+					<li class="navitemsextra nav-item">
+						<a class="nav-link" href="{% url 'dashboard' %}">
+							<span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px;"><i class="typcn typcn-lock-open"></i></span>
+							<span class="nav-link-title">help</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</aside>
+
+	<div class="content">
+		<div class="container-xl">
+			<div class="page-header d-print-none">
+				<div class="row align-items-center">
+					<div class="col" style="zoom: 130%;">
+						<div class="page-pretitle">{{ company_profile.company_name|default:"N.K Graphics" }}</div>
+						<h2 class="page-title">Edit Bill <span style="color:#2b6ee8;">#{{ bill.billno }}</span></h2>
+					</div>
+					<div class="col-auto ms-auto">
+						<a href="{% url 'invoice' billno=bill.billno %}" class="btn btn-outline-secondary">Cancel</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card card-lg" style="width: 95%; margin:auto">
+				<div class="card-body">
+					<div class="row text-center">
+						<h2 style="font-weight:600;border-bottom: 2px solid gray; margin-bottom: 2rem;">Tax Invoice</h2>
+					</div>
+
+					{# Invoice header preview #}
+					<div class="row">
+						<div class="col-6">
+							<div class="row"><div class="col-12">
+								{% if company_profile.gst_number %}<p>GSTIN: {{ company_profile.gst_number }}</p>{% endif %}
+							</div></div>
+							<div class="row"><div class="col-12">
+								<div class="d-flex" style="zoom: 110%;">
+									<div>{% if company_profile.invoice_logo %}<img src="{{ company_profile.invoice_logo.url }}" alt="" width="50px" height="50px">{% else %}<img src="{% static 'img/logo.png' %}" alt="" width="50px" height="50px">{% endif %}</div>
+									<div style="height:50px; border:1px solid gray;">
+										<div class="companyname"><span>{{ company_profile.company_name|upper|default:"N. K. GRAPHICS" }}</span></div>
+									</div>
+								</div>
+								<div>
+									<p style="text-align:center; font-weight:600; margin-top:5px; width:max-content;">
+										{% if company_profile.description %}<span style="font-size:17px;">{{ company_profile.description }}</span><br>{% endif %}
+										{{ company_profile.address|linebreaksbr|default:"" }}
+									</p>
+								</div>
+							</div></div>
+						</div>
+						<div class="col-6" style="padding-left: 11rem">
+							<p style="font-size:15px; font-weight:600;">
+								{% if company_profile.mobile %}Mob. : {{ company_profile.mobile }}<br>{% endif %}
+								{% if company_profile.email %}E-mail : {{ company_profile.email }}{% endif %}
+							</p>
+							<br>
+							<ul class="d-flex duplicatemark">
+								<li style="border:1px solid black; list-style:none;">Original</li>
+								<li style="border:1px solid black; list-style:none;">Duplicate</li>
+								<li style="border:1px solid black; list-style:none;">Triplicate</li>
+							</ul>
+						</div>
+					</div>
+					<hr style="margin-top:1px;">
+
+					<form action="{% url 'editbill_submitted' billno=bill.billno %}" method="POST">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-lg-8 col-md-8 col-sm-12">
+
+								<div class="form-group row mb-3">
+									<label class="form-label col-3 col-form-label">Choose Recipient: </label>
+									<div class="col">
+										<select id="nameDropdown" onchange="updateInputValue()" class="form-select">
+											<option value="" disabled selected>Select a name</option>
+											{% for key in reciept_names_dict %}
+											<option value="{{ key }}">{{ key }}</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group row mb-3">
+									<label class="form-label col-2 col-form-label">Name</label>
+									<div class="col">
+										<input name="rname" type="text" class="form-control" id="rname"
+											value="{{ bill.recipient }}" placeholder="Enter Recipient's Name" required>
+									</div>
+								</div>
+								<div class="form-group row mb-3">
+									<label class="form-label col-2 col-form-label">Address</label>
+									<div class="col">
+										<input name="address" type="text" class="form-control" id="address"
+											value="{{ bill.address }}" placeholder="Enter Recipient's Address" required>
+									</div>
+								</div>
+								<div class="form-group row mb-3">
+									<label class="form-label col-2 col-form-label">GSTIN</label>
+									<div class="col">
+										<input name="gst" type="text" minlength="15" maxlength="15" id="gst"
+											class="form-control" oninput="this.value = this.value.toUpperCase()"
+											value="{{ bill.GSTno }}" placeholder="Enter Recipient's GST number" required>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-4 col-lg-4 col-sm-12 text-center">
+								<div class="form-group">
+									<label class="pb-2" style="border-bottom:1px solid gray; font-size:17px;">Invoice no.</label>
+									<div class="col-8" style="padding-left:85px; padding-top:10px;">
+										<input name="invoice_no" type="number" class="form-control" value="{{ bill.billno }}" readonly>
+									</div>
+								</div>
+								<hr style="margin:1.2rem;">
+								<div class="form-group row mb-3">
+									<label class="form-label col-3 col-form-label">Date:</label>
+									<div class="col">
+										<input name="date" type="date" class="form-control" id="date" value="{{ bill.date|date:'Y-m-d' }}" required>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<hr>
+						<label class="mb-4 form-label col-form-label" style="font-size:15px; border-bottom:1px solid gray;">Items</label>
+
+						<div class="item_container" id="items">
+							{% for item_obj in items %}
+							<div class="page-title">{{ forloop.counter }}.</div>
+							<div class="mb-4 p-2" style="border:1px solid lightgray;" id="itemno{{ forloop.counter0 }}">
+								<div class="row mb-2">
+									<div class="col-12 form-group">
+										<label class="mb-1 form-label" style="font-size:12px; color:#6c757d;">Choose from previous items (optional)</label>
+										<select class="form-select item-autofill-select" onchange="fillItemFromDropdown(this)">
+											<option value="" selected>— Select a previous item —</option>
+										</select>
+									</div>
+								</div>
+								<div class="row mb-3">
+									<div class="col-9 form-group">
+										<label class="mb-1 form-label col col-form-label">Description</label>
+										<textarea class="form-control" name="ItemName[]" rows="2"
+											placeholder="Description of item" required>{{ item_obj.itemname }}</textarea>
+									</div>
+									<div class="col-3 form-group">
+										<label class="mb-1 form-label col col-form-label">HSN Code</label>
+										<input class="form-control" type="number" name="hsn[]"
+											value="{{ item_obj.hsncode }}" placeholder="HSN Code" required>
+									</div>
+								</div>
+								<div class="row mb-3">
+									<div class="col-4 form-group">
+										<label class="mb-1 form-label col col-form-label">Quantity</label>
+										<input class="form-control" type="number" name="qty[]"
+											id="qty{{ forloop.counter0 }}" value="{{ item_obj.qty }}" placeholder="Quantity" required>
+									</div>
+									<div class="col-4 form-group">
+										<label class="mb-1 form-label col col-form-label">Rate</label>
+										<input class="form-control" type="number" step="0.0001" name="rate[]"
+											id="rate{{ forloop.counter0 }}" value="{{ item_obj.rate.normalize }}" placeholder="Rate" required>
+									</div>
+									<div class="col-4 form-group">
+										<label class="mb-1 form-label col col-form-label">Amount</label>
+										<div class="form-control" id="amount{{ forloop.counter0 }}"></div>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+
+						<button id="addmore" class="float-end add_form_field btn btn-primary" style="margin:-1rem 0rem;">
+							<i class="typcn typcn-document-add" style="font-size:16px;"></i>&nbsp; Add Item
+						</button>
+						<hr style="margin-top:10%;">
+
+						<div class="row justify-content-center" style="width:80%; text-align:center; margin:auto;">
+							<div class="col-3">
+								<label class="form-label col-form-label" style="border-bottom:1px solid gray;">Total Amount</label>
+								<div class="mt-2" style="font-size:17px;">Rs. <span id="amt">0</span></div>
+							</div>
+							<hr style="width:1px;height:auto;margin:0 10px;padding:0;">
+							<div class="col-2">
+								<label class="form-label col-form-label" style="border-bottom:1px solid gray;">CGST(%)</label>
+								<div class="mt-2"><input type="decimal" name="CGST" id="CGST" class="form-control" value="{{ bill.cgst.normalize }}"></div>
+							</div>
+							<hr style="width:1px;height:auto;margin:0 10px;padding:0;">
+							<div class="col-2">
+								<label class="form-label col-form-label" style="border-bottom:1px solid gray;">SGST(%)</label>
+								<div class="mt-2"><input type="decimal" name="SGST" id="SGST" class="form-control" value="{{ bill.sgst.normalize }}"></div>
+							</div>
+							<hr style="width:1px;height:auto;margin:0 10px;padding:0;">
+							<div class="col-3">
+								<label class="form-label col-form-label" style="border-bottom:1px solid gray;">Grand Total</label>
+								<div class="mt-2" style="font-size:17px;">Rs. <span id="grandamt">0</span></div>
+							</div>
+						</div>
+
+						<div class="text-center mt-4">
+							<input type="submit" class="btn btn-success px-5" value="Save Changes">
+							<a href="{% url 'invoice' billno=bill.billno %}" class="btn btn-outline-secondary px-5 ms-2">Cancel</a>
+						</div>
+					</form>
+
+					<!-- Max items modal -->
+					<div class="modal modal-blur fade" id="limit" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-body">
+									<div class="modal-title">Maximum Item limit reached.</div>
+									<div>Please create another bill to add more items.</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-success me-auto" data-bs-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<script>
+						var items_dict = {{ items_dict_json|safe }};
+						var initial_item_count = {{ items|length }};
+
+						function buildItemOptions() {
+							var opts = '<option value="" selected>— Select a previous item —</option>';
+							for (var key in items_dict) {
+								opts += '<option value="' + key.replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '">' + key + '</option>';
+							}
+							return opts;
+						}
+
+						function fillItemFromDropdown(selectEl) {
+							var key = selectEl.value;
+							if (!key || !(key in items_dict)) return;
+							var card = $(selectEl).closest('.mb-4');
+							card.find('textarea[name="ItemName[]"]').val(key);
+							card.find('input[name="hsn[]"]').val(items_dict[key]['hsncode']);
+							card.find('input[name="rate[]"]').val(items_dict[key]['rate']);
+							recalcAll();
+						}
+
+						function recalcAll() {
+							var total = 0;
+							var qtys = $('input[name="qty[]"]');
+							var rates = $('input[name="rate[]"]');
+							qtys.each(function(i) {
+								var q = parseFloat($(this).val()) || 0;
+								var r = parseFloat($(rates[i]).val()) || 0;
+								var amt = (q * r).toFixed(2);
+								$('#amount' + i).text(amt > 0 ? amt : '');
+								total += q * r;
+							});
+							total = total.toFixed(2);
+							$('#amt').text(total);
+							var cgst = parseFloat($('#CGST').val()) || 0;
+							var sgst = parseFloat($('#SGST').val()) || 0;
+							var tax = ((cgst + sgst) / 100) * parseFloat(total);
+							$('#grandamt').text((parseFloat(total) + tax).toFixed(2));
+						}
+
+						$(document).ready(function() {
+							// Populate item dropdowns
+							$('.item-autofill-select').each(function() {
+								$(this).html(buildItemOptions());
+							});
+
+							// Calculate amounts for pre-filled items on load
+							recalcAll();
+
+							// Live recalc on any qty/rate/cgst/sgst change
+							$(document).on('input keyup', 'input[name="qty[]"], input[name="rate[]"], #CGST, #SGST', function() {
+								recalcAll();
+							});
+
+							// Add Item button
+							var max_fields = 6;
+							var wrapper = $(".item_container");
+							var x = initial_item_count;
+
+							$(".add_form_field").click(function(e) {
+								e.preventDefault();
+								if (x < max_fields) {
+									$(wrapper).append(
+										'<div class="page-title">' + (x + 1) + '.</div>' +
+										'<div class="mb-4 p-2" style="border:1px solid lightgray;" id="item' + (x + 1) + '">' +
+										'<div class="row mb-2"><div class="col-12 form-group"><label class="mb-1 form-label" style="font-size:12px;color:#6c757d;">Choose from previous items (optional)</label>' +
+										'<select class="form-select item-autofill-select" onchange="fillItemFromDropdown(this)">' + buildItemOptions() + '</select></div></div>' +
+										'<div class="row mb-3"><div class="col-9 form-group"><label class="mb-1 form-label col col-form-label">Description</label>' +
+										'<textarea class="form-control" name="ItemName[]" placeholder="Description of item" required></textarea></div>' +
+										'<div class="col-3 form-group"><label class="mb-1 form-label col col-form-label">HSN Code</label>' +
+										'<input class="form-control" type="number" name="hsn[]" placeholder="HSN Code" required></div></div>' +
+										'<div class="row mb-3"><div class="col-4 form-group"><label class="mb-1 form-label col col-form-label">Quantity</label>' +
+										'<input class="form-control" type="number" name="qty[]" id="qty' + x + '" placeholder="Quantity" required></div>' +
+										'<div class="col-4 form-group"><label class="mb-1 form-label col col-form-label">Rate</label>' +
+										'<input class="form-control" type="number" step="0.0001" name="rate[]" id="rate' + x + '" placeholder="Rate" required></div>' +
+										'<div class="col-4 form-group"><label class="mb-1 form-label col col-form-label">Amount</label>' +
+										'<div class="form-control" id="amount' + x + '"></div></div></div></div>'
+									);
+									x++;
+								} else {
+									$('#limit').modal('show');
+								}
+							});
+						});
+					</script>
+
+					<script>
+						function updateInputValue() {
+							var dropdown = document.getElementById("nameDropdown");
+							var name = dropdown.value;
+							var reciept_names_dict = {{ reciept_names_dict|safe }};
+							if (name in reciept_names_dict) {
+								document.getElementById('rname').value = reciept_names_dict[name]['name'];
+								document.getElementById('address').value = reciept_names_dict[name]['address'];
+								document.getElementById('gst').value = reciept_names_dict[name]['gstno'];
+							}
+						}
+					</script>
+				</div>
+			</div>
+		</div>
+
+		<footer class="footer footer-transparent d-print-none">
+			<div class="container">
+				<div class="row text-center">
+					<div class="col-12">
+						<ul class="list-inline list-inline-dots mb-0">
+							<li class="list-inline-item">Copyright &copy; 2023 All rights reserved.</li>
+							<li class="list-inline-item">Built by <a href="https://www.github.com/Nitanshubajpai">Nitanshu Bajpai</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</div>
+</div>
+<script src="{% static 'js/apexcharts.min.js' %}"></script>
+<script src="{% static 'js/tabler.min.js' %}"></script>
+</body>
+</html>

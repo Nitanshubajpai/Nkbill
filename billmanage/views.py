@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import bill, item, CompanyProfile
 from datetime import datetime
 import calendar
+import json
 # Create your views here.
 from django.core.paginator import Paginator, EmptyPage,PageNotAnInteger
 
@@ -21,20 +22,29 @@ def dashboard(request):
     return render(request, 'billmanage/dashboard.html', {'bills':billobj, 'count': count, 'amount': amount, 'month':month})
 
 
+def _build_recipient_dict(bill_objs):
+    d = {}
+    for b in bill_objs:
+        d[f'{b.recipient} | {b.address}'] = {'address': b.address, 'gstno': b.GSTno, 'name': b.recipient}
+    return d
+
+def _build_items_dict():
+    d = {}
+    for it in item.objects.all().order_by('-itemno'):
+        if it.itemname not in d:
+            d[it.itemname] = {'hsncode': str(it.hsncode), 'rate': str(it.rate)}
+    return d
+
 def addbill(request):
     bill_objs = bill.objects.all().order_by('-billno')
-
-    if not bill_objs:
-        billno = 1
-    else:
-        billno = bill_objs.first().billno + 1
-
-    reciept_names_dict = dict()
-    
-    for bill_obj in bill_objs:
-        reciept_names_dict[f'{bill_obj.recipient} | {bill_obj.address}'] = {'address':bill_obj.address, 'gstno':bill_obj.GSTno, 'name':bill_obj.recipient}
-
-    return render(request, 'billmanage/addbill.html', {'billno': billno, 'reciept_names_dict': reciept_names_dict})
+    billno = bill_objs.first().billno + 1 if bill_objs else 1
+    reciept_names_dict = _build_recipient_dict(bill_objs)
+    items_dict_json = json.dumps(_build_items_dict())
+    return render(request, 'billmanage/addbill.html', {
+        'billno': billno,
+        'reciept_names_dict': reciept_names_dict,
+        'items_dict_json': items_dict_json,
+    })
 
 def addbill_submitted(request):
     if request.method == "POST":
@@ -144,6 +154,64 @@ def delete(request, billno):
     deletebill = bill.objects.get(billno=billno)
     deletebill.delete()
     return records(request)
+
+
+def editbill(request, billno):
+    bill_obj = bill.objects.get(billno=billno)
+    items_obj = item.objects.filter(billno=billno)
+    bill_objs = bill.objects.all().order_by('-billno')
+    reciept_names_dict = _build_recipient_dict(bill_objs)
+    items_dict_json = json.dumps(_build_items_dict())
+    return render(request, 'billmanage/editbill.html', {
+        'bill': bill_obj,
+        'items': items_obj,
+        'reciept_names_dict': reciept_names_dict,
+        'items_dict_json': items_dict_json,
+    })
+
+
+def editbill_submitted(request, billno):
+    if request.method == 'POST':
+        bill_obj = bill.objects.get(billno=billno)
+        item.objects.filter(billno=billno).delete()
+
+        total = 0
+        grandtotal = 0
+        gst = float(request.POST['CGST']) + float(request.POST['SGST'])
+        rate_list = request.POST.getlist('rate[]', [])
+        qty_list = request.POST.getlist('qty[]', [])
+        itname = request.POST.getlist('ItemName[]', [])
+        hsn = request.POST.getlist('hsn[]', [])
+        amounts = []
+
+        for i in range(len(rate_list)):
+            amt = float(rate_list[i]) * float(qty_list[i])
+            total += amt
+            grandtotal += amt + (amt * gst / 100)
+            amounts.append(amt)
+
+        bill_obj.recipient = request.POST['rname']
+        bill_obj.address = request.POST['address']
+        bill_obj.date = request.POST['date']
+        bill_obj.GSTno = request.POST['gst']
+        bill_obj.cgst = float(request.POST['CGST'])
+        bill_obj.sgst = float(request.POST['SGST'])
+        bill_obj.total = total
+        bill_obj.grandtotal = grandtotal
+        bill_obj.save()
+
+        for i in range(len(rate_list)):
+            item(
+                itemname=itname[i],
+                hsncode=hsn[i],
+                qty=qty_list[i],
+                rate=rate_list[i],
+                amount=amounts[i],
+                billno=bill_obj,
+            ).save()
+
+        return invoice(request, billno)
+    return redirect('records')
 
 
 def profile(request):

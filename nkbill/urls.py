@@ -30,4 +30,6 @@ urlpatterns = [
     path('delete/<int:billno>', billviews.delete, name='delete'),
     path('addbill_submitted', billviews.addbill_submitted, name='addbill_submitted'),
     path('profile', billviews.profile, name='profile'),
+    path('editbill/<int:billno>', billviews.editbill, name='editbill'),
+    path('editbill_submitted/<int:billno>', billviews.editbill_submitted, name='editbill_submitted'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
