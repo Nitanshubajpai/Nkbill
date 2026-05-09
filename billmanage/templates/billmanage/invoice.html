@@ -13,7 +13,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>Invoice | N.K Graphics | Bill</title>
+    <title>Invoice | {{ company_profile.company_name|default:"N.K Graphics" }} | Bill</title>
     <!-- CSS files -->
     <link href="{% static 'css/tabler.min.css' %}" rel="stylesheet"/>
     <link href="{% static 'css/tabler-flags.min.css' %}" rel="stylesheet"/>
@@ -75,7 +75,7 @@
           </button>
           <h1 class="navbar-brand navbar-brand-autodark">
             <a href=".">
-              <img src="{% static 'img/logodash.png' %}" width="auto" height="50" alt="N.K Graphics" class="mt-2">
+              {% if company_profile.sidebar_logo %}<img src="{{ company_profile.sidebar_logo.url }}" width="auto" height="50" alt="{{ company_profile.company_name|default:'N.K Graphics' }}" class="mt-2">{% else %}<img src="{% static 'img/logodash.png' %}" width="auto" height="50" alt="{{ company_profile.company_name|default:'N.K Graphics' }}" class="mt-2">{% endif %}
             </a>
           </h1>
          
@@ -106,6 +106,14 @@
                   </span>
                 </a>
               </li>
+              {% if company_profile.show_profile_tab %}
+              <li class="navitemsextra nav-item">
+                <a class="nav-link" href="{% url 'profile' %}">
+                  <span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px"><i class="typcn typcn-user"></i></span>
+                  <span class="nav-link-title">Profile</span>
+                </a>
+              </li>
+              {% endif %}
               <li class="navitemsextra nav-item">
                 <a class="nav-link" href="{% url 'dashboard' %}" >
                   <span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px;"><i class="typcn typcn-lock-open"></i></span>
@@ -126,7 +134,7 @@
 			  <div class="row align-items-center">
 				<div class="col" style="zoom: 130%;">
 					<div class="page-pretitle">
-						N.K Graphics
+						{{ company_profile.company_name|default:"N.K Graphics" }}
 					  </div>
 					  <h2 class="page-title">
 						To, {{bill.recipient}}
@@ -152,33 +160,32 @@
 				  <div class="col-6">
 					<div class="row">
 						<div class="col-12">
-							<p> GSTIN: 09AHVPB2268D1Z9</p>
+							{% if company_profile.gst_number %}<p>GSTIN: {{ company_profile.gst_number }}</p>{% endif %}
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-12">
 							<div class="d-flex" style="zoom: 110%;">
-								<div><img src="{% static 'img/logo.png' %}" alt="" width="50px" height="50PX"></div>
+								<div>{% if company_profile.invoice_logo %}<img src="{{ company_profile.invoice_logo.url }}" alt="" width="50px" height="50PX">{% else %}<img src="{% static 'img/logo.png' %}" alt="" width="50px" height="50PX">{% endif %}</div>
 								<div style="height: 50PX; border: 1px solid gray;">
-									<div class="companyname"><span>N. K. GRAPHICS</span></div>
+									<div class="companyname"><span>{{ company_profile.company_name|upper|default:"N. K. GRAPHICS" }}</span></div>
 								</div>
 							</div>
 							<div>
 								<p style="text-align: center; font-weight: 600; margin-top: 5px; width: max-content;">
-									<span style="font-size: 17px;">Printed Stationery & Computer Stationery</span><br>
-									109/408, (B-1) Nehru Nagar <br> Kanpur - 208 012 - U.P 09
+									{% if company_profile.description %}<span style="font-size: 17px;">{{ company_profile.description }}</span><br>{% endif %}
+									{{ company_profile.address|linebreaksbr|default:"" }}
 								</p>
-
 							</div>
 						</div>
 					</div>
-					<style>
-						
-					</style>
-					
+
 				  </div>
 				  <div class="col-6" style="padding-left: 8rem">
-					<p style="font-size: 15px; font-weight: 600;">Mob. : 9336124593 <br> E-mail : <E-mail>sunil.124593@gmail.com</E-mail></p>
+					<p style="font-size: 15px; font-weight: 600;">
+						{% if company_profile.mobile %}Mob. : {{ company_profile.mobile }}<br>{% endif %}
+						{% if company_profile.email %}E-mail : {{ company_profile.email }}{% endif %}
+					</p>
 					<br>
 					<ul class="duplicatemark">
 						<li id="printstatus" > Original Copy</li>
@@ -310,20 +317,20 @@
                     </div>
                     <div class="row">
                         <div class="col-4 mt-2 " style="margin-left: 10px; border: 1.5px solid gray; zoom: 90%;">
-                            <label class="form-label col-form-label  pb-0" >Bank Name: <span style="color: gray;"> Bank of Baroda</span></label>
-                            <label class="form-label col-form-label  pb-0 pt-1">Bank Account No.: <span style="color: gray;"> 24580400005587</span></label>
-                            <label class="form-label col-form-label  pb-0 pt-1">IFSC Code: <span style="color: gray;">  BARBOKANASH</span></label>
-                            <label class="form-label col-form-label  pb-0 pt-1">Branch: <span style="color: gray;"> Nehru Nagar, Kanpur - 208012</span></label>
-                            <label class="form-label col-form-label  pb-2 pt-1">Pan No.: <span style="color: gray;"> AHVPB2268D</span></label>
+                            {% if company_profile.bank_name %}<label class="form-label col-form-label pb-0">Bank Name: <span style="color: gray;"> {{ company_profile.bank_name }}</span></label>{% endif %}
+                            {% if company_profile.bank_account_no %}<label class="form-label col-form-label pb-0 pt-1">Bank Account No.: <span style="color: gray;"> {{ company_profile.bank_account_no }}</span></label>{% endif %}
+                            {% if company_profile.ifsc_code %}<label class="form-label col-form-label pb-0 pt-1">IFSC Code: <span style="color: gray;"> {{ company_profile.ifsc_code }}</span></label>{% endif %}
+                            {% if company_profile.bank_branch %}<label class="form-label col-form-label pb-0 pt-1">Branch: <span style="color: gray;"> {{ company_profile.bank_branch }}</span></label>{% endif %}
+                            {% if company_profile.pan_no %}<label class="form-label col-form-label pb-2 pt-1">Pan No.: <span style="color: gray;"> {{ company_profile.pan_no }}</span></label>{% endif %}
                         </div>
                         <div class="col-3 mt-2 m-4 mb-0" style="zoom: 85%;">
-                            <label class="form-label col-form-label  pb-0" style="font-size: 17px;" ><b>E. &. O. E. </b></label>
-                            <label class="form-label col-form-label  pb-0" style="font-size: 15px;"><b>Term & Conditions:</b></label>
-                            <label class="form-label col-form-label  pb-2" style="color: gray;">Please pay by A/C payee Cheques/Draft only.All Disputes subject to kanpur jurisdiction only.</label>
+                            <label class="form-label col-form-label pb-0" style="font-size: 17px;"><b>E. &amp; O. E.</b></label>
+                            <label class="form-label col-form-label pb-0" style="font-size: 15px;"><b>Term &amp; Conditions:</b></label>
+                            <label class="form-label col-form-label pb-2" style="color: gray;">{{ company_profile.terms_conditions|default:"" }}</label>
                         </div>
                         <div class="col-3 mt-2 pt-1 text-center" style="border: 1.5px solid gray;">
-                            <label class="form-label col-form-label  pb-0" >For <span style="font-size: 20px;"><b>N. K. Graphics</b></span> </label><br><br>
-                            <label class="form-label col-form-label  pb-0" style="font-size: 12px;"><b>Signature of Issuing Person</b></label>
+                            <label class="form-label col-form-label pb-0">For <span style="font-size: 20px;"><b>{{ company_profile.company_name|default:"N. K. Graphics" }}</b></span></label><br><br>
+                            <label class="form-label col-form-label pb-0" style="font-size: 12px;"><b>Signature of Issuing Person</b></label>
                         </div>
 
                     </div>

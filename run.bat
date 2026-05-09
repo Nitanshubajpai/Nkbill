@@ -1,20 +1,43 @@
 @echo off
+setlocal EnableDelayedExpansion
 
-REM Navigate to your Django project directory
-cd /d C:\DEll\nkbill\nkbill
+REM ============================================================
+REM  Nkbill - Start Server
+REM  Double-click or run from any location — no hardcoded paths.
+REM ============================================================
 
-REM Activate the virtual environment (if you're using one)
-REM Replace "venv" with the name of your virtual environment folder
-REM If you're not using a virtual environment, you can skip this step
-call C:\DEll\nkbill\env\Scripts\activate
+REM Change to the folder this script lives in
+cd /d "%~dp0"
 
-REM Set any required environment variables (if needed)
-REM For example, if you have a SECRET_KEY environment variable:
-REM set SECRET_KEY=your_secret_key_value
+REM --- Check setup has been run ---
+if not exist "env\Scripts\activate.bat" (
+    echo.
+    echo  ERROR: Virtual environment not found.
+    echo  Please run setup.bat first.
+    echo.
+    pause
+    exit /b 1
+)
 
-REM Run the Django development server
-start cmd /k python manage.py runserver
+if not exist "db.sqlite3" (
+    echo.
+    echo  WARNING: Database not found.
+    echo  Please run setup.bat first to create the database.
+    echo.
+    pause
+    exit /b 1
+)
 
-REM Open the URL in the default web browser after a short delay (adjust as needed)
-ping 127.0.0.1 -n 2 > nul
+REM --- Activate environment ---
+call env\Scripts\activate.bat
+
+REM --- Start the server in a new window ---
+echo.
+echo  Starting Nkbill server...
+echo  The app will open in your browser automatically.
+echo.
+start "Nkbill Server" cmd /k "cd /d "%~dp0" && call env\Scripts\activate.bat && python manage.py runserver"
+
+REM --- Wait briefly for the server to start then open browser ---
+ping 127.0.0.1 -n 3 >nul
 start "" http://127.0.0.1:8000

@@ -18,6 +18,7 @@ from django.views.static import serve
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
 from billmanage import views as billviews
 
 urlpatterns = [
@@ -28,4 +29,5 @@ urlpatterns = [
     path('invoice/<int:billno>', billviews.invoice, name='invoice'),
     path('delete/<int:billno>', billviews.delete, name='delete'),
     path('addbill_submitted', billviews.addbill_submitted, name='addbill_submitted'),
-]
+    path('profile', billviews.profile, name='profile'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

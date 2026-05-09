@@ -13,7 +13,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>Dashboard | N.K Graphics | Bill</title>
+    <title>Dashboard | {{ company_profile.company_name|default:"N.K Graphics" }} | Bill</title>
     <!-- CSS files -->
     <link href="{% static 'css/tabler.min.css' %}" rel="stylesheet"/>
     <link href="{% static 'css/tabler-flags.min.css' %}" rel="stylesheet"/>
@@ -43,7 +43,7 @@
           </button>
           <h1 class="navbar-brand navbar-brand-autodark">
             <a href=".">
-              <img src="{% static 'img/logodash.png' %}" width="auto" height="50" alt="N.K Graphics" class="mt-2">
+              {% if company_profile.sidebar_logo %}<img src="{{ company_profile.sidebar_logo.url }}" width="auto" height="50" alt="{{ company_profile.company_name|default:'N.K Graphics' }}" class="mt-2">{% else %}<img src="{% static 'img/logodash.png' %}" width="auto" height="50" alt="{{ company_profile.company_name|default:'N.K Graphics' }}" class="mt-2">{% endif %}
             </a>
           </h1>
          
@@ -74,6 +74,14 @@
                   </span>
                 </a>
               </li>
+              {% if company_profile.show_profile_tab %}
+              <li class="navitemsextra nav-item">
+                <a class="nav-link" href="{% url 'profile' %}">
+                  <span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px"><i class="typcn typcn-user"></i></span>
+                  <span class="nav-link-title">Profile</span>
+                </a>
+              </li>
+              {% endif %}
               <li class="navitemsextra nav-item">
                 <a class="nav-link" href="{% url 'dashboard' %}" >
                   <span class="nav-link-icon d-md-none d-lg-inline-block" style="margin-top: -6px; font-size: 20px;"><i class="typcn typcn-lock-open"></i></span>
@@ -94,7 +102,7 @@
               <div class="col" style="zoom: 130%;">
                 <!-- Page pre-title -->
                 <div class="page-pretitle">
-                  N.K Graphics
+                  {{ company_profile.company_name|default:"N.K Graphics" }}
                 </div>
                 <h2 class="page-title">
                   Dashboard

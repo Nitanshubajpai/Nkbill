@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from .models import bill, item
+from django.shortcuts import render, redirect
+from .models import bill, item, CompanyProfile
 from datetime import datetime
 import calendar
 # Create your views here.
@@ -144,6 +144,32 @@ def delete(request, billno):
     deletebill = bill.objects.get(billno=billno)
     deletebill.delete()
     return records(request)
+
+
+def profile(request):
+    profile_obj, _ = CompanyProfile.objects.get_or_create(pk=1)
+
+    if request.method == 'POST':
+        profile_obj.company_name = request.POST.get('company_name', profile_obj.company_name)
+        profile_obj.description = request.POST.get('description', profile_obj.description)
+        profile_obj.gst_number = request.POST.get('gst_number', profile_obj.gst_number)
+        profile_obj.address = request.POST.get('address', profile_obj.address)
+        profile_obj.mobile = request.POST.get('mobile', profile_obj.mobile)
+        profile_obj.email = request.POST.get('email', profile_obj.email)
+        profile_obj.bank_name = request.POST.get('bank_name', profile_obj.bank_name)
+        profile_obj.bank_account_no = request.POST.get('bank_account_no', profile_obj.bank_account_no)
+        profile_obj.ifsc_code = request.POST.get('ifsc_code', profile_obj.ifsc_code)
+        profile_obj.bank_branch = request.POST.get('bank_branch', profile_obj.bank_branch)
+        profile_obj.pan_no = request.POST.get('pan_no', profile_obj.pan_no)
+        profile_obj.terms_conditions = request.POST.get('terms_conditions', profile_obj.terms_conditions)
+        if 'sidebar_logo' in request.FILES:
+            profile_obj.sidebar_logo = request.FILES['sidebar_logo']
+        if 'invoice_logo' in request.FILES:
+            profile_obj.invoice_logo = request.FILES['invoice_logo']
+        profile_obj.save()
+        return redirect('profile')
+
+    return render(request, 'billmanage/profile.html', {'profile': profile_obj})
 
 def num2words(num):
     under_20 = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen']
